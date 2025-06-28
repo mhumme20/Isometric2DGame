@@ -40,9 +40,6 @@ public class EnemyAttackState : EnemyBaseState
             enemy.BeginAttack();
         }
     }
-    public override void OnTrigger(EnemyStateManager enemy, Collider2D collision){}
-    public override void OnTriggerE(EnemyStateManager enemy, Collider2D collision){}
-
 
 
 

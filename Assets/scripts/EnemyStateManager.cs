@@ -12,17 +12,17 @@ public class EnemyStateManager : MonoBehaviour
 
     public GameObject Player, AttackIndicator, ProjectilePrefab;
 
-    //this enemy goes from idle to patrol once the player enters its trigger collider and will go from patroll to idle
-    //when the player exists its trigger collider. While inside the trigger collider, futher state shitfts are handled
+
     //by measuring the distance between the player and the enemy
-   //PatrolRange is the distance at which the enemy will return to patrolling if it was chassing
+    //IdleRange is the distance at which the enemy goes from patroling to being idle
+   //PatrolRange is the distance at which the enemy will return to patrolling if it was chassing or idle
    //chaserange is where it will go from patroling to chasing
    //attack range is where it will go from chasing to attacking
    //max attack range at which it will go from attacking to chasing
    //speed is how fast it moves when patroling, chasespeed is how fast it moves while chasing
    //atackinterval is how often it attacks, attackspeed is how long it takes for it to perform the attack
    //projectile speed is how fast the projectile it fires moves, timer is used to measure time for attackintervals
-    public float PatrolRange, ChaseRange, AttackRange, MaxAttackRange, Speed, ChaseSpeed, AttackInterval, AttackSpeed, ProjectileSpeed, Timer;
+    public float IdleRange, PatrolRange, ChaseRange, AttackRange, MaxAttackRange, Speed, ChaseSpeed, AttackInterval, AttackSpeed, ProjectileSpeed, Timer;
     
     //patrolstatus determins weather its moving towards the start or patrolpostion
     //rotate determines weather it will rotate and attacking indicates weather it is currently performing an attack
@@ -40,32 +40,36 @@ public class EnemyStateManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        RandomizePatrol();
         currenState = IdleState;
         currenState.EnterState(this);
-        int start= Random.Range(0,SpawnAndPatrolPositions.Count-1);
-        startposition = SpawnAndPatrolPositions[start];
-        SpawnAndPatrolPositions.RemoveAt(start);
-        int patrol= Random.Range(0,SpawnAndPatrolPositions.Count-1);
-        patrolposition = SpawnAndPatrolPositions[patrol];
+        Player = GameObject.FindGameObjectWithTag("Player");
+
     }
 
+    public void RandomizePatrol()
+    {
+        if (SpawnAndPatrolPositions.Count<2)
+        {
+            return;
+            
+        }
+        int start= Random.Range(0,SpawnAndPatrolPositions.Count);
+        startposition = SpawnAndPatrolPositions[start];
+        
+        int patrol= Random.Range(0,SpawnAndPatrolPositions.Count);
+        while (patrol==start)
+        {
+            patrol= Random.Range(0,SpawnAndPatrolPositions.Count);
+        }
+        patrolposition = SpawnAndPatrolPositions[patrol];
+    }
     // Update is called once per frame
     void Update()
     {
         currenState.UpdateState(this);
     }
     
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        Debug.Log("collision");
-        currenState.OnTrigger(this, collision);
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        currenState.OnTriggerE(this, collision);
-    }
-
     public void SwitchState(EnemyBaseState state)
     {
         currenState = state;

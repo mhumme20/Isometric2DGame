@@ -4,6 +4,7 @@ public class EnemyPatrolState : EnemyBaseState
 {
     public override void EnterState(EnemyStateManager enemy)
     {
+        enemy.RandomizePatrol();
         enemy.patrolStatus = true;
     }
 
@@ -29,15 +30,10 @@ public class EnemyPatrolState : EnemyBaseState
         {
             enemy.SwitchState(enemy.ChaseState);
         }
-      
-    }
-    public override void OnTrigger(EnemyStateManager enemy, Collider2D collision){}
-
-    public override void OnTriggerE(EnemyStateManager enemy, Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
+        if (playerDistance>enemy.PatrolRange)
         {
-            enemy.SwitchState(enemy.IdleState);
+            enemy.SwitchState(enemy.PatrolState);
         }
     }
+   
 }

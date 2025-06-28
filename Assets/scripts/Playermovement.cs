@@ -5,10 +5,11 @@ using UnityEngine.InputSystem;
 
 public class Playermovement : MonoBehaviour
 {
+ public PlayerAttack playerAttack;
  public Rigidbody2D playerRigid;
  public float speed;
  private InputSystem_Actions PlayerInput;
- private Vector2 movementInput;
+ private Vector2 movementInput, lastRotation;
  public GameObject Playersprite;
  
  private void Move(InputAction.CallbackContext context)
@@ -40,12 +41,18 @@ public class Playermovement : MonoBehaviour
   PlayerInput.Enable();
   PlayerInput.Player.Move.performed += Move;
   PlayerInput.Player.Move.canceled += Stop;
+  PlayerInput.Player.Attack.performed += Attack;
+  PlayerInput.Player.Jump.performed+= Attack;
  }
+
+
 
  private void OnDisable()
  {
   PlayerInput.Player.Move.performed -= Move;
   PlayerInput.Player.Move.canceled -= Stop;
+  PlayerInput.Player.Attack.performed -= Attack;
+  PlayerInput.Player.Jump.performed -= Attack;
   PlayerInput.Disable();
  }
 
@@ -54,12 +61,17 @@ public class Playermovement : MonoBehaviour
   playerRigid.linearVelocity = movementInput * speed;
  }
 
+ private void Attack(InputAction.CallbackContext context)
+ {
+  playerAttack.attack(lastRotation);
+ }
  private void RotateSprite()
  {
   if (movementInput != Vector2.zero)
   {
    //used Mathf.Atan2 to get calculate the angle of movement, but the result was off by 90 degrees
    //thats why its reduces the result by 90 after converting it back into degrees from radians with Mathf.Rad2Deg
+   lastRotation = movementInput;
    float angle = Mathf.Atan2(movementInput.y, movementInput.x) * Mathf.Rad2Deg-90;
    Playersprite.transform.rotation = Quaternion.Euler(0f, 0f, angle);
   }

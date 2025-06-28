@@ -7,15 +7,20 @@ public class EnemyIdleState : EnemyBaseState
         enemy.transform.position = enemy.startposition;
         Debug.Log(enemy.currenState);
     }
-    public override void UpdateState(EnemyStateManager enemy){}
 
-    public override void OnTrigger(EnemyStateManager enemy, Collider2D collision)
+    public override void UpdateState(EnemyStateManager enemy)
     {
-        if (collision.CompareTag("Player"))
+        var playerDistance = Vector2.Distance(enemy.transform.position, enemy.Player.transform.position);
+        if (playerDistance<enemy.PatrolRange)
         {
-            enemy.Player = collision.gameObject;
             enemy.SwitchState(enemy.PatrolState);
         }
+        if (playerDistance>enemy.IdleRange)
+        {
+            enemy.SwitchState(enemy.IdleState);
+        }
     }
-    public override void OnTriggerE(EnemyStateManager enemy, Collider2D collision){}
+
+
+ 
 }
